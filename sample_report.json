@@ -1,0 +1,165 @@
+{
+  "risk_score": 50.7,
+  "grade": "C (Needs attention)",
+  "totals": {
+    "total_checks": 14,
+    "failed": 5,
+    "warnings": 0,
+    "errors": 0,
+    "passed": 9
+  },
+  "severity_counts": {
+    "Critical": 3,
+    "High": 1,
+    "Medium": 1,
+    "Low": 0
+  },
+  "findings": [
+    {
+      "resource": "s3://cred-user-uploads-prod",
+      "check": "S3_PUBLIC_ACCESS",
+      "status": "FAIL",
+      "severity": "Critical",
+      "detail": "No Block Public Access configuration exists on this bucket",
+      "cis_control": "CIS 2.1.2",
+      "fix": "Enable S3 Block Public Access at the bucket (and account) level, and remove any ACL grants to AllUsers/AuthenticatedUsers."
+    },
+    {
+      "resource": "s3://cred-user-uploads-prod",
+      "check": "S3_ENCRYPTION",
+      "status": "FAIL",
+      "severity": "Medium",
+      "detail": "No default server-side encryption configured",
+      "cis_control": "CIS 2.1.3",
+      "fix": "Enable default SSE-S3 or SSE-KMS encryption on the bucket."
+    },
+    {
+      "resource": "s3://cred-static-assets",
+      "check": "S3_PUBLIC_ACCESS",
+      "status": "PASS",
+      "severity": "Info",
+      "detail": "Public access appears blocked",
+      "cis_control": "CIS 2.1.2",
+      "fix": "Enable S3 Block Public Access at the bucket (and account) level, and remove any ACL grants to AllUsers/AuthenticatedUsers."
+    },
+    {
+      "resource": "s3://cred-static-assets",
+      "check": "S3_ENCRYPTION",
+      "status": "PASS",
+      "severity": "Info",
+      "detail": "Default encryption is enabled",
+      "cis_control": "CIS 2.1.3",
+      "fix": "Enable default SSE-S3 or SSE-KMS encryption on the bucket."
+    },
+    {
+      "resource": "default (sg-471e4caaa559d3edc)",
+      "check": "SG_OPEN_TO_WORLD",
+      "status": "PASS",
+      "severity": "Info",
+      "detail": "No rules open to 0.0.0.0/0",
+      "cis_control": "CIS 5.2 / 5.3",
+      "fix": ""
+    },
+    {
+      "resource": "default (sg-4f86700b7adb1409d)",
+      "check": "SG_OPEN_TO_WORLD",
+      "status": "PASS",
+      "severity": "Info",
+      "detail": "No rules open to 0.0.0.0/0",
+      "cis_control": "CIS 5.2 / 5.3",
+      "fix": ""
+    },
+    {
+      "resource": "web-server-sg (sg-1250a3ea54e6a8e41)",
+      "check": "SG_OPEN_TO_WORLD_RISKY_PORT",
+      "status": "FAIL",
+      "severity": "Critical",
+      "detail": "Open to 0.0.0.0/0 on sensitive port(s): SSH (22)",
+      "cis_control": "CIS 5.2 / 5.3",
+      "fix": "Restrict inbound rules to known IP ranges (e.g. office/VPN CIDR) instead of 0.0.0.0/0, especially for SSH/RDP/DB ports."
+    },
+    {
+      "resource": "internal-only-sg (sg-bcd8c5f7be00601df)",
+      "check": "SG_OPEN_TO_WORLD",
+      "status": "PASS",
+      "severity": "Info",
+      "detail": "No rules open to 0.0.0.0/0",
+      "cis_control": "CIS 5.2 / 5.3",
+      "fix": ""
+    },
+    {
+      "resource": "iam-user/piyush.sharma",
+      "check": "IAM_MFA",
+      "status": "PASS",
+      "severity": "Info",
+      "detail": "MFA enabled or user has no console access",
+      "cis_control": "CIS 1.10",
+      "fix": ""
+    },
+    {
+      "resource": "iam-user/piyush.sharma",
+      "check": "IAM_EXCESSIVE_PRIVILEGE",
+      "status": "PASS",
+      "severity": "Info",
+      "detail": "No direct or group-based AdministratorAccess found",
+      "cis_control": "CIS 1.16",
+      "fix": ""
+    },
+    {
+      "resource": "iam-user/legacy-admin",
+      "check": "IAM_MFA",
+      "status": "FAIL",
+      "severity": "Critical",
+      "detail": "User has console password but no MFA device enabled",
+      "cis_control": "CIS 1.10",
+      "fix": "Enforce MFA for this user (virtual or hardware token)."
+    },
+    {
+      "resource": "iam-user/legacy-admin",
+      "check": "IAM_EXCESSIVE_PRIVILEGE",
+      "status": "FAIL",
+      "severity": "High",
+      "detail": "User effectively has AdministratorAccess via: AdministratorAccess",
+      "cis_control": "CIS 1.16",
+      "fix": "Apply least privilege \u2014 scope this user to only the permissions their role requires, use roles for elevated access."
+    },
+    {
+      "resource": "iam-user/ci-deploy-bot",
+      "check": "IAM_MFA",
+      "status": "PASS",
+      "severity": "Info",
+      "detail": "MFA enabled or user has no console access",
+      "cis_control": "CIS 1.10",
+      "fix": ""
+    },
+    {
+      "resource": "iam-user/ci-deploy-bot",
+      "check": "IAM_EXCESSIVE_PRIVILEGE",
+      "status": "PASS",
+      "severity": "Info",
+      "detail": "No direct or group-based AdministratorAccess found",
+      "cis_control": "CIS 1.16",
+      "fix": ""
+    }
+  ],
+  "attack_paths": [
+    {
+      "type": "ATTACK_PATH",
+      "severity": "Critical",
+      "title": "Correlated attack path: exposed entry point + weak identity + exposed data",
+      "chain": "Internet -> web-server-sg (sg-1250a3ea54e6a8e41) (open entry point) -> iam-user/legacy-admin (privilege weakness) -> s3://cred-user-uploads-prod (sensitive data exposure)",
+      "contributing_findings": [
+        "web-server-sg (sg-1250a3ea54e6a8e41)",
+        "iam-user/legacy-admin",
+        "s3://cred-user-uploads-prod"
+      ],
+      "explanation": "Individually these three findings are High/Critical alerts. Together, they describe a realistic path an attacker could take: get in through the exposed port, use the weak/over-privileged identity to move further, then reach the exposed data. This combination should be investigated before isolated findings of the same severity.",
+      "fix": "Break the chain at any link: close the exposed port to 0.0.0.0/0, enforce MFA and least privilege on the identity, and remove public access from the data store. Fixing all three removes the path entirely, not just one alert."
+    }
+  ],
+  "metadata": {
+    "scanned_at": "2026-09-16T10:00:00Z",
+    "region": "ap-south-1",
+    "profile": "demo"
+  }
+}
