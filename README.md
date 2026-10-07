@@ -148,6 +148,9 @@ see Future enhancements below.
 
 ---
 
+## 🚀 Live Demo
+
+👉 [Open CSPM Dashboard](https://piyushsharma06-cspm-aws-scanner-reportdashboard-d7chwq.streamlit.app/)
 ## Author
 
 Piyush Sharma — B.Tech CSE (Cybersecurity), G.L. Bajaj Institute of Technology and Management
